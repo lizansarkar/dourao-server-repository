@@ -29,6 +29,27 @@ async function run() {
 
     const db = client.db("dourao_DB");
     const parcelsCollection = db.collection("parcels");
+    const paymentCollection = db.collection("payments");
+    const userCollection = db.collection("users");
+
+
+    //user realeted api ************
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      user.role = 'user';
+      user.createdAt = new Date();
+
+      const email = user.email;
+      const userExists = await userCollection.findOne({email})
+
+      if(userExists) {
+        return res.send({message: "user exist"})
+      }
+
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
+
 
     //parcel api here
     //get parcel data
