@@ -31,7 +31,27 @@ async function run() {
     const parcelsCollection = db.collection("parcels");
     const paymentCollection = db.collection("payments");
     const userCollection = db.collection("users");
+    const riderCollection = db.collection("riders");
 
+    //riders realeted api ************
+    app.post('/riders', async (req, res) => {
+      const rider = req.body;
+      rider.status = 'pending';
+      rider.createdAt = new Date();
+
+      const result = await riderCollection.insertOne(rider)
+      res.send(result)
+    })
+
+    app.get('/riders', async (req, res) => {
+      const query = {}
+      if(req.query.status){
+        query.status = req.query.status;
+      }
+      const cursor = riderCollection.find(query)
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
     //user realeted api ************
     app.post('/users', async (req, res) => {
