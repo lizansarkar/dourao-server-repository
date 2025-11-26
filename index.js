@@ -34,6 +34,20 @@ async function run() {
     const riderCollection = db.collection("riders");
 
     //riders realeted api ************
+    app.patch('/riders/:id', async (req, res) => {
+      const status = req.body.status;
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updateDoc = {
+        $set: {
+          status: status
+        }
+      }
+
+      const result = await riderCollection.updateOne(query, updateDoc);
+      res.send(result)
+    })
+
     app.post('/riders', async (req, res) => {
       const rider = req.body;
       rider.status = 'pending';
