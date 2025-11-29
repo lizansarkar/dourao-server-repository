@@ -90,6 +90,21 @@ async function run() {
       res.send(result);
     })
 
+    // accept user a role for admin
+    app.patch('users/:id', async (req, res) => {
+      const id = req.params.id;
+      const roleInfo = req.body;
+      const query = {_id: new ObjectId(id)}
+      const updateDoc = {
+        $set: {
+          role: roleInfo.role
+        }
+      }
+
+      const result = await userCollection.updateOne(query, updateDoc)
+      res.send(result)
+    })
+
     //parcel api here
     //get parcel data
     app.get("/parcels", async (req, res) => {
