@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const port = process.env.PORT || 3000;
 
-//middlewete
+//middlewere
 app.use(express.json());
 app.use(cors());
 
@@ -32,6 +32,19 @@ async function run() {
     const paymentCollection = db.collection("payments");
     const userCollection = db.collection("users");
     const riderCollection = db.collection("riders");
+
+    //Veryfy admin middlewere
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded_email;
+      const query = {email};
+      const user = await userCollection.findOne(query);
+
+      if(!user || user.role !== 'admin') {
+        res.status(403).send({message: 'forbidden access'})
+      }
+
+      next();
+    }
 
     //riders realeted api ************
     app.patch('/riders/:id', async (req, res) => {
@@ -74,6 +87,17 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/users/:id', async (req, res) => {
+      
+    })
+
+    app.get('/users/:email/role', verifyAdmin, async (req, res) => {
+      const email = req.params.email;
+      const query = { email }
+      const user = await userCollection.findOne(query)
+      res.send({user: user?.role || 'user'})
+    })
+
     app.post('/users', async (req, res) => {
       const user = req.body;
       user.role = 'user';
@@ -90,8 +114,8 @@ async function run() {
       res.send(result);
     })
 
-    // accept user a role for admin
-    app.patch('users/:id', async (req, res) => {
+    // accept user from admin
+    app.patch('/users/:id/role', verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const roleInfo = req.body;
       const query = {_id: new ObjectId(id)}
