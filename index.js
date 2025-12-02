@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("dourao_DB");
     const parcelsCollection = db.collection("parcels");
@@ -34,17 +34,17 @@ async function run() {
     const riderCollection = db.collection("riders");
 
     //Veryfy admin middlewere
-    const verifyAdmin = async (req, res, next) => {
-      const email = req.decoded_email;
-      const query = {email};
-      const user = await userCollection.findOne(query);
+    // const verifyAdmin = async (req, res, next) => {
+    //   const email = req.decoded_email;
+    //   const query = {email};
+    //   const user = await userCollection.findOne(query);
 
-      if(!user || user.role !== 'admin') {
-        res.status(403).send({message: 'forbidden access'})
-      }
+    //   if(!user || user.role !== 'admin') {
+    //     res.status(403).send({message: 'forbidden access'})
+    //   }
 
-      next();
-    }
+    //   next();
+    // }
 
     //riders realeted api ************
     app.patch('/riders/:id', async (req, res) => {
@@ -91,7 +91,7 @@ async function run() {
       
     })
 
-    app.get('/users/:email/role', verifyAdmin, async (req, res) => {
+    app.get('/users/:email/role', async (req, res) => {
       const email = req.params.email;
       const query = { email }
       const user = await userCollection.findOne(query)
@@ -115,7 +115,7 @@ async function run() {
     })
 
     // accept user from admin
-    app.patch('/users/:id/role', verifyAdmin, async (req, res) => {
+    app.patch('/users/:id/role', async (req, res) => {
       const id = req.params.id;
       const roleInfo = req.body;
       const query = {_id: new ObjectId(id)}
@@ -322,10 +322,10 @@ async function run() {
       res.send({success: false})
     })
 
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // await client.close();
   }
